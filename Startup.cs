@@ -32,10 +32,22 @@ namespace AspNetCoreApp
             {
                 endpoints.MapGet("/", async context =>
                 {                    
-                    await context.Response.WriteAsync("Practical Session on EF Core byTechWebDots");
+                    await context.Response.WriteAsync("Practical Session on EF Core by TechWebDots\n");
+                    CreateDatabaseAsync(context).Wait();
                     AddBookAsync("Book1", "publisher", context).Wait();
                 });
             });
+        }
+
+        public static async Task CreateDatabaseAsync(HttpContext httpContext)
+        {
+            using (var context = new BooksDBContext())
+            {
+                bool created = await context.Database.EnsureCreatedAsync();
+
+                string createdText = created ? "created\n" : "already exists\n";
+                await httpContext.Response.WriteAsync($"database {createdText}");
+            }
         }
         public async Task AddBookAsync(string title, string publisher, HttpContext httpContext)
         {
@@ -45,7 +57,7 @@ namespace AspNetCoreApp
                 context.Add(book);
                 int records = await context.SaveChangesAsync();
 
-                await httpContext.Response.WriteAsync($"{records} record added");
+                await httpContext.Response.WriteAsync($"{records} record added successfully! \n");
 
             }
             await httpContext.Response.WriteAsync("");
