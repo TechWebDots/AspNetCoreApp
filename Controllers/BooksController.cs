@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -7,24 +6,23 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AspNetCoreApp.DataAccess;
 using AspNetCoreApp.Models;
+using MongoDB.Driver;
 
 namespace AspNetCoreApp.Controllers
 {
     public class BooksController : Controller
     {
-        //private readonly IBookRepository _bookRepository;
-        private readonly BookContext _context;
-
-        public BooksController(BookContext context)
+        private readonly IBookRepository _bookRepository;
+                
+        public BooksController(IBookRepository bookRepository)
         {
-            _context = context;
-            //_bookRepository = bookRepository;
+            _bookRepository = bookRepository;            
         }
 
         // GET: Books
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Books.ToListAsync());
+            return View(await _bookRepository.GetAllBooksAsync());
         }
 
         // GET: Books/Details/5
@@ -35,8 +33,7 @@ namespace AspNetCoreApp.Controllers
                 return NotFound();
             }
 
-            var book = await _context.Books
-                .FirstOrDefaultAsync(m => m.BookId == id);
+            var book = await _bookRepository.GetBookByIdAsync(id);
             if (book == null)
             {
                 return NotFound();
@@ -60,8 +57,8 @@ namespace AspNetCoreApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(book);
-                await _context.SaveChangesAsync();
+                await _bookRepository.AddBookAsync(book);
+                await _bookRepository.SaveAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(book);
@@ -75,7 +72,7 @@ namespace AspNetCoreApp.Controllers
                 return NotFound();
             }
 
-            var book = await _context.Books.FindAsync(id);
+            var book = await _bookRepository.GetBookByIdAsync(id);
             if (book == null)
             {
                 return NotFound();
@@ -99,8 +96,8 @@ namespace AspNetCoreApp.Controllers
             {
                 try
                 {
-                    _context.Update(book);
-                    await _context.SaveChangesAsync();
+                    _bookRepository.UpdateBook(book);
+                    await _bookRepository.SaveAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -126,8 +123,7 @@ namespace AspNetCoreApp.Controllers
                 return NotFound();
             }
 
-            var book = await _context.Books
-                .FirstOrDefaultAsync(m => m.BookId == id);
+            var book = await _bookRepository.GetBookByIdAsync(id);
             if (book == null)
             {
                 return NotFound();
@@ -141,15 +137,15 @@ namespace AspNetCoreApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var book = await _context.Books.FindAsync(id);
-            _context.Books.Remove(book);
-            await _context.SaveChangesAsync();
+            var book = await _bookRepository.GetBookByIdAsync(id);
+            _bookRepository.DeleteBook(id);
+            await _bookRepository.SaveAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool BookExists(int id)
         {
-            return _context.Books.Any(e => e.BookId == id);
+            return _bookRepository.GetAllBooks().Any(e => e.BookId == id);
         }
     }
 }

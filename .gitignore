@@ -340,3 +340,5 @@ ASALocalRun/
 healthchecksdb
 /DataAccess/IBookRepository.cs
 /DataAccess/BookRepository.cs
+/Controllers/MongoCRUD.cs
+/Models/MongoBook.cs

@@ -21,6 +21,7 @@ namespace AspNetCoreApp
         {
             services.AddMvc(options => options.EnableEndpointRouting = false);
             services.AddDbContext<BookContext>(options => options.UseSqlServer("name=ConnectionStrings:BookContext"));
+            services.AddTransient<IBookRepository, BookRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
