@@ -10,16 +10,15 @@ namespace AspNetCoreApp.Models
 
     [Table("Books")]
     public class Book
-    {
+    {        
         public int BookId { get; set; }
         [MaxLength(120)]
         [Required]
         public string Title { get; set; }
         [MaxLength(50)]
-        public string Publisher { get; set; }
-
+        public string Publisher { get; set; } 
+        
         [Timestamp]
-        public string Timestamp { get; set; }
-
+        public byte[] RowVersion { get; set; }
     }
 }

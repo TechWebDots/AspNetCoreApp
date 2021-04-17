@@ -29,6 +29,7 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Publisher)
+                @Html.HiddenFor(modelItem => item.RowVersion)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.BookId">Edit</a> |

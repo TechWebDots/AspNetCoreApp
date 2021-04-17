@@ -22,6 +22,7 @@
                 <label asp-for="Publisher" class="control-label"></label>
                 <input asp-for="Publisher" class="form-control" />
                 <span asp-validation-for="Publisher" class="text-danger"></span>
+                <input type="hidden" asp-for="RowVersion" />
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

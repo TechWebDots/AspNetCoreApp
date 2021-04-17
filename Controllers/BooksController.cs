@@ -86,7 +86,7 @@ namespace AspNetCoreApp.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("BookId,Title,Publisher")] Book book)
+        public async Task<IActionResult> Edit(int id, [Bind("BookId,Title,Publisher,RowVersion")] Book book)
         {
             if (id != book.BookId || !BookExists(book.BookId))
             {
