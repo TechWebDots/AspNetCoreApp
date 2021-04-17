@@ -100,6 +100,12 @@ namespace AspNetCoreApp.Controllers
                     _bookRepository.UpdateBook(book);
                     await _bookRepository.SaveAsync();
                 }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    ModelState.AddModelError(string.Empty, "Unable to save changes. The Book details was updated by another user, Please reload to get the latest record!");
+                    
+                    return View(book);
+                }
                 catch (Exception ex)
                 {
                     SqlException s = ex.InnerException as SqlException;

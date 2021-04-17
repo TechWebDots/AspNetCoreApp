@@ -123,7 +123,7 @@ namespace AspNetCoreApp.DataAccess
                 }
             }
             catch (DbUpdateConcurrencyException ex)
-            {
+            {                
                 foreach (var entry in ex.Entries)
                 {
                     if (entry.Entity is Book)
@@ -145,12 +145,10 @@ namespace AspNetCoreApp.DataAccess
                     }
                     else
                     {
-                        throw new NotSupportedException(
-                            "Don't know how to handle concurrency conflicts for "
-                            + entry.Metadata.Name);
+                        throw new NotSupportedException("Unable to save changes. The book details was updated by another user. " + entry.Metadata.Name);
                     }
                 }
-                throw;
+                throw ex;
             }
             catch (DbUpdateException ex)
             {
