@@ -17,5 +17,9 @@ namespace AspNetCoreApp.Models
         public string Title { get; set; }
         [MaxLength(50)]
         public string Publisher { get; set; }
+
+        [Timestamp]
+        public string Timestamp { get; set; }
+
     }
 }

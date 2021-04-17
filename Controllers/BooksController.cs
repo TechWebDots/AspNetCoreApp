@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using AspNetCoreApp.DataAccess;
 using AspNetCoreApp.Models;
 using MongoDB.Driver;
+using Microsoft.Data.SqlClient;
 
 namespace AspNetCoreApp.Controllers
 {
@@ -87,7 +88,7 @@ namespace AspNetCoreApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("BookId,Title,Publisher")] Book book)
         {
-            if (id != book.BookId)
+            if (id != book.BookId || !BookExists(book.BookId))
             {
                 return NotFound();
             }
@@ -99,15 +100,16 @@ namespace AspNetCoreApp.Controllers
                     _bookRepository.UpdateBook(book);
                     await _bookRepository.SaveAsync();
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception ex)
                 {
-                    if (!BookExists(book.BookId))
+                    SqlException s = ex.InnerException as SqlException;
+                    if (s != null && s.Number == 2627)
                     {
-                        return NotFound();
+                        ModelState.AddModelError(string.Empty, string.Format("Book Title '{0}' already exists.", book.Title));
                     }
                     else
                     {
-                        throw;
+                        ModelState.AddModelError(string.Empty, "An error occured - please contact your system administrator.");
                     }
                 }
                 return RedirectToAction(nameof(Index));
