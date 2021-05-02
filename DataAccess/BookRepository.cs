@@ -13,10 +13,10 @@ namespace AspNetCoreApp.DataAccess
 {
     public class BookRepository:IBookRepository
     {
-        private readonly BookContext _context;
+        private readonly BookContext _context;        
         public BookRepository(BookContext context)
         {
-            _context = context;     
+            _context = context;            
         }
 
         public IEnumerable<Book> GetAll()
@@ -38,8 +38,8 @@ namespace AspNetCoreApp.DataAccess
             catch (Exception ex)
             {
                 throw new Exception($"Couldn't retrieve entities: {ex.Message}");
-            }            
-            
+            }
+
         }
         public virtual Book GetBookById(int bookId)
         {
@@ -109,14 +109,20 @@ namespace AspNetCoreApp.DataAccess
             _context.SaveChanges();
         }
 
-        public virtual async Task<int> SaveAsync()
-        {
+        public virtual async Task<int> SaveAsync(CancellationToken ct)
+        { 
             int records = 0;
             IDbContextTransaction tx = null;
+            //await Task.Delay(5000);
+            if (ct.IsCancellationRequested)
+            {
+                ct.ThrowIfCancellationRequested();
+            }
+            
             try
             {
                 using (tx = await _context.Database.BeginTransactionAsync())
-                {
+                {                  
                     records = await _context.SaveChangesAsync();
                     tx.Commit();
                     return records;
@@ -135,9 +141,6 @@ namespace AspNetCoreApp.DataAccess
                         {
                             var proposedValue = proposedValues[property];
                             var databaseValue = databaseValues[property];
-
-                            // TODO: decide which value should be written to database
-                            // proposedValues[property] = <value to be saved>;
                         }
 
                         // Refresh original values to bypass next concurrency check
@@ -184,6 +187,6 @@ namespace AspNetCoreApp.DataAccess
             Dispose(true);
 
             GC.SuppressFinalize(this);
-        }
+        }        
     }
 }

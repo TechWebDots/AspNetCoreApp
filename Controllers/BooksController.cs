@@ -8,15 +8,21 @@ using AspNetCoreApp.DataAccess;
 using AspNetCoreApp.Models;
 using MongoDB.Driver;
 using Microsoft.Data.SqlClient;
+using System.Threading;
 
 namespace AspNetCoreApp.Controllers
 {
     public class BooksController : Controller
     {
         private readonly IBookRepository _bookRepository;
-                
+        // Define the cancellation token.
+        CancellationTokenSource _cts=null ;
         public BooksController(IBookRepository bookRepository)
         {
+            #region MyRegion
+            //MongoCRUD db = new MongoCRUD("Books");
+            //var record = db.GetBookById("Book",new Guid("c16d4bf3-8328-4563-91b6-4a501c0329c2"));
+            #endregion
             _bookRepository = bookRepository;            
         }
 
@@ -56,10 +62,15 @@ namespace AspNetCoreApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("BookId,Title,Publisher")] Book book)
         {
+            _cts = new CancellationTokenSource();
+            // send a cancel after 4000 ms or call cts.Cancel();
+            _cts.CancelAfter(4000);
+            CancellationToken ct = _cts.Token;
+
             if (ModelState.IsValid)
             {
                 await _bookRepository.AddBookAsync(book);
-                await _bookRepository.SaveAsync();
+                await _bookRepository.SaveAsync(ct);
                 return RedirectToAction(nameof(Index));
             }
             return View(book);
@@ -88,6 +99,13 @@ namespace AspNetCoreApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("BookId,Title,Publisher,RowVersion")] Book book)
         {
+            //CancellationToken disconnectedToken = Response.ClientDisconnectedToken;
+            //var source = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, disconnectedToken);
+            _cts = new CancellationTokenSource();
+            // send a cancel after 4000 ms or call cts.Cancel();
+            _cts.CancelAfter(4000); 
+            CancellationToken ct = _cts.Token;
+
             if (id != book.BookId || !BookExists(book.BookId))
             {
                 return NotFound();
@@ -98,12 +116,17 @@ namespace AspNetCoreApp.Controllers
                 try
                 {
                     _bookRepository.UpdateBook(book);
-                    await _bookRepository.SaveAsync();
+                    await _bookRepository.SaveAsync(ct);                     
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
                     ModelState.AddModelError(string.Empty, "Unable to save changes. The Book details was updated by another user, Please reload to get the latest record!");
                     
+                    return View(book);
+                }
+                catch (OperationCanceledException ex)
+                {                   
+                    ModelState.AddModelError(string.Empty, "An error occured - " + ex.Message);
                     return View(book);
                 }
                 catch (Exception ex)
@@ -117,6 +140,11 @@ namespace AspNetCoreApp.Controllers
                     {
                         ModelState.AddModelError(string.Empty, "An error occured - please contact your system administrator.");
                     }
+                    return View(book);
+                }
+                finally
+                {
+                    _cts.Dispose();
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -145,9 +173,14 @@ namespace AspNetCoreApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            _cts = new CancellationTokenSource();
+            // send a cancel after 4000 ms or call cts.Cancel();
+            _cts.CancelAfter(4000);
+            CancellationToken ct = _cts.Token;
+
             var book = await _bookRepository.GetBookByIdAsync(id);
             _bookRepository.DeleteBook(id);
-            await _bookRepository.SaveAsync();
+            await _bookRepository.SaveAsync(ct);
             return RedirectToAction(nameof(Index));
         }
 

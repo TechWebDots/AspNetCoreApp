@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AspNetCoreApp.DataAccess
@@ -18,6 +19,6 @@ namespace AspNetCoreApp.DataAccess
         void UpdateBook(Book bookEntity);
         void DeleteBook(int bookId);
         void Save();
-        Task<int> SaveAsync();
+        Task<int> SaveAsync(CancellationToken cancellationtoken);
     }
 }

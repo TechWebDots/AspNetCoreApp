@@ -11,8 +11,7 @@ namespace AspNetCoreApp.DataAccess
         public static void Initialize(BookContext context)
         {
             context.Database.EnsureCreated();
-
-            // Look for any students.
+            // Look for any Books.
             if (context.Books.Any())
             {
                 return;   // DB has been seeded
@@ -23,7 +22,7 @@ namespace AspNetCoreApp.DataAccess
             new Book{Publisher="Publisher 1",Title="Title 1"},
             new Book{Publisher="Publisher 2",Title="Title 2"},
             new Book{Publisher="Publisher 3",Title="Title 3"}
-
+            
             };
             foreach (Book s in books)
             {

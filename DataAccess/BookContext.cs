@@ -34,7 +34,17 @@ namespace AspNetCoreApp.DataAccess
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(modelBuilder);
+            #region FluentAPI
+            //Used for model Data Seed
+            //modelBuilder.Entity<Book>().HasData(
+            //new Book { BookId = 1, Publisher = "Publisher 1", Title = "Title 1" },
+            //new Book { BookId = 2, Publisher = "Publisher 2", Title = "Title 2" },
+            //new Book { BookId = 3, Publisher = "Publisher 3", Title = "Title 3" },
+            //new Book { BookId = 4, Publisher = "Publisher 4", Title = "Title 4" }
+            //);
+            
+            //Used to shape the DB
             //var book = modelBuilder.Entity<Book>();
             //book.HasKey(p => p.BookId);
             //book.Property(p => p.Title).HasMaxLength(120).IsRequired();
@@ -43,6 +53,7 @@ namespace AspNetCoreApp.DataAccess
             //    .HasColumnType("timestamp")
             //    .ValueGeneratedOnAddOrUpdate()
             //    .IsConcurrencyToken();
+            #endregion
         }
     }
 }
