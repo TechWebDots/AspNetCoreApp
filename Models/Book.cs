@@ -17,7 +17,12 @@ namespace AspNetCoreApp.Models
         public string Title { get; set; }
         [MaxLength(50)]
         public string Publisher { get; set; } 
+        public string Author { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal Price { get; set; }
+        public string Source { get; set; }
         
+        public string PurchaseUrl { get; set; }
         [Timestamp]
         public byte[] RowVersion { get; set; }
     }

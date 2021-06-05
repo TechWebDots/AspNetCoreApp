@@ -13,7 +13,7 @@ namespace AspNetCoreApp.DataAccess
         {
         }
 
-        public BookContext() /* Required for migrations */{ }
+        //public BookContext() /* Required for migrations */{ }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

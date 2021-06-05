@@ -342,3 +342,7 @@ healthchecksdb
 /DataAccess/BookRepository.cs
 /Controllers/MongoCRUD.cs
 /Models/MongoBook.cs
+/lib
+/Filters/OperationCancelledExceptionFilter.cs
+/libman.json
+/Views/Shared/_Layout.cshtml

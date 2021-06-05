@@ -4,7 +4,7 @@
     ViewData["Title"] = "Simple Book Management System";
 }
 
-<h1 style="text-align:center">Simple Book Management System</h1>
+<h1 style="text-align:center">Available Books</h1>
 <h3 style="text-align: center">Books</h3>
 <p style="text-align: center">
     <a asp-action="Create">Create New</a>
@@ -18,6 +18,18 @@
             <th>
                 @Html.DisplayNameFor(model => model.Publisher)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Author)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Source)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PurchaseUrl)
+            </th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -30,6 +42,18 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Publisher)
                 @Html.HiddenFor(modelItem => item.RowVersion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Author)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Source)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PurchaseUrl)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.BookId">Edit</a> |

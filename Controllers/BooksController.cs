@@ -12,6 +12,7 @@ using System.Threading;
 
 namespace AspNetCoreApp.Controllers
 {
+    //[Route("Books")]
     public class BooksController : Controller
     {
         private readonly IBookRepository _bookRepository;
@@ -27,6 +28,9 @@ namespace AspNetCoreApp.Controllers
         }
 
         // GET: Books
+        //[Route("")] // Combines to define the route template "Home"
+        //[Route("Index")] // Combines to define route template "Home/Index"
+        //[Route("/")] // Does not combine, defines the route template ""
         public async Task<IActionResult> Index()
         {
             return View(await _bookRepository.GetAllBooksAsync());
@@ -79,6 +83,7 @@ namespace AspNetCoreApp.Controllers
         // GET: Books/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            //throw new Exception("Error in Edit View");
             if (id == null)
             {
                 return NotFound();
@@ -97,13 +102,14 @@ namespace AspNetCoreApp.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("BookId,Title,Publisher,RowVersion")] Book book)
-        {
-            //CancellationToken disconnectedToken = Response.ClientDisconnectedToken;
-            //var source = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, disconnectedToken);
+        public async Task<IActionResult> Edit(int id, [Bind("BookId,Title,Publisher,Author,Price,PurchaseUrl,Source,RowVersion")] Book book)
+        {   
             _cts = new CancellationTokenSource();
+            
             // send a cancel after 4000 ms or call cts.Cancel();
             _cts.CancelAfter(4000); 
+            
+            //Fetch the Token
             CancellationToken ct = _cts.Token;
 
             if (id != book.BookId || !BookExists(book.BookId))
@@ -118,30 +124,30 @@ namespace AspNetCoreApp.Controllers
                     _bookRepository.UpdateBook(book);
                     await _bookRepository.SaveAsync(ct);                     
                 }
+                //catch (OperationCanceledException ex)
+                //{
+                //    ModelState.AddModelError(string.Empty, "catch block: OperationCanceledException " + ex.Message);
+                //    return View(book);
+                //}
                 catch (DbUpdateConcurrencyException ex)
                 {
                     ModelState.AddModelError(string.Empty, "Unable to save changes. The Book details was updated by another user, Please reload to get the latest record!");
                     
                     return View(book);
-                }
-                catch (OperationCanceledException ex)
-                {                   
-                    ModelState.AddModelError(string.Empty, "An error occured - " + ex.Message);
-                    return View(book);
-                }
-                catch (Exception ex)
-                {
-                    SqlException s = ex.InnerException as SqlException;
-                    if (s != null && s.Number == 2627)
-                    {
-                        ModelState.AddModelError(string.Empty, string.Format("Book Title '{0}' already exists.", book.Title));
-                    }
-                    else
-                    {
-                        ModelState.AddModelError(string.Empty, "An error occured - please contact your system administrator.");
-                    }
-                    return View(book);
-                }
+                }                
+                //catch (Exception ex)
+                //{
+                //    SqlException s = ex.InnerException as SqlException;
+                //    if (s != null && s.Number == 2627)
+                //    {
+                //        ModelState.AddModelError(string.Empty, string.Format("Book Title '{0}' already exists.", book.Title));
+                //    }
+                //    else
+                //    {
+                //        ModelState.AddModelError(string.Empty, "An error occured - please contact your system administrator.");
+                //    }
+                //    return View(book);
+                //}
                 finally
                 {
                     _cts.Dispose();
@@ -149,6 +155,8 @@ namespace AspNetCoreApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(book);
+            //CancellationToken disconnectedToken = Response.ClientDisconnectedToken;
+            //var source = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, disconnectedToken);
         }
 
         // GET: Books/Delete/5
