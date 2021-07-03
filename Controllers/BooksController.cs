@@ -68,7 +68,7 @@ namespace AspNetCoreApp.Controllers
         {
             _cts = new CancellationTokenSource();
             // send a cancel after 4000 ms or call cts.Cancel();
-            _cts.CancelAfter(4000);
+            //_cts.CancelAfter(4000);
             CancellationToken ct = _cts.Token;
 
             if (ModelState.IsValid)
